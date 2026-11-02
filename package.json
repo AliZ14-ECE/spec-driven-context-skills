@@ -1,0 +1,7 @@
+{
+  "name": "spec-driven-context-skills",
+  "version": "1.0.0",
+  "description": "Skills that generate spec-driven context files for AI-assisted development",
+  "keywords": ["agent-skills", "ai", "context", "documentation", "spec-driven"],
+  "license": "MIT"
+}

@@ -1,106 +1,57 @@
-# Spec-Driven Context Generator Skills
+# Spec-Driven Context Skills
 
-Two production-ready skills for AI coding assistants (Antigravity, Cursor, Gemini CLI, Claude Code) to inspect an existing codebase and automatically generate spec-driven context files.
+AI agent skills that generate structured context files for AI-assisted development. One skill for frontend projects, one for backend.
 
-- `frontend-context-files` — For web applications, mobile applications, or client-side libraries.
-- `backend-context-files` — For API servers, microservices, CLI tools, or data pipelines.
+## Skills
 
----
-
-## What It Does
-
-The AI agent scans your codebase (package manifest, folder hierarchy, existing documentation), proposes a compact, modular file list with section summaries, and writes the context files upon your approval.
-
-These files serve as the single source of truth for AI agents in future coding sessions, preventing architectural drift, hallucinations, and code churn.
-
----
-
-## Repository Structure
-
-```text
-spec-driven-context-skills/
-├── README.md                           # Developer guide & prompt templates (for humans)
-├── LICENSE                             # MIT License
-└── skills/
-    ├── frontend-context-files/
-    │   └── SKILL.md                    # Agent instructions for frontend codebases
-    └── backend-context-files/
-        └── SKILL.md                    # Agent instructions for backend codebases
-```
-
----
+| Skill                                                                | Description                                                                      |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`backend-context-files`](./skills/backend-context-files/SKILL.md)   | Generate spec-driven context files for backend projects (APIs, services, CLIs)   |
+| [`frontend-context-files`](./skills/frontend-context-files/SKILL.md) | Generate spec-driven context files for frontend projects (web apps, mobile apps) |
 
 ## Installation
 
-### Option 1: Global (Available across all projects on your machine)
-
-Copy the skills to your global agent customization directory:
-
-**Windows (PowerShell):**
-```powershell
-Copy-Item -Recurse .\skills\* "$HOME\.gemini\config\skills\"
-```
-
-**macOS / Linux:**
-```bash
-cp -r ./skills/* ~/.gemini/config/skills/
-```
-
-### Option 2: Project-Specific (Committed with your team's repository)
-
-Copy the skills directly into your project's workspace agent directory:
+Install all skills interactively:
 
 ```bash
-mkdir -p .agents/skills
-cp -r /path/to/spec-driven-context-skills/skills/* .agents/skills/
+npx skills add AliZ14-ECE/spec-driven-context-skills
 ```
 
----
+Install a specific skill:
 
-## How It Works
+```bash
+# Backend context files
+npx skills add AliZ14-ECE/spec-driven-context-skills --skill backend-context-files -a claude-code
 
-1. **Provide a prompt** describing your project using one of the templates below.
-2. **Agent scans the codebase** (package manifest, directory structure, existing documentation).
-3. **Agent proposes a file list** with sections and descriptions for your approval before writing anything.
-4. **Agent generates the files** following strict brevity and spec-driven rules (under 80 lines/file, compact directive format, no duplication).
-5. **Review and commit** the context files to version control.
-
----
-
-## Frontend Prompt Template
-
-Use when generating context for a web, mobile, or client application.
-
-```markdown
-Generate context files for my frontend project.
-
-Project: [one sentence — what the app does]
-Framework: [e.g., Next.js 15, Expo SDK 58, React 19, Vue 3, Flutter]
-Language: [e.g., TypeScript, Dart, JavaScript]
-Backend: [e.g., REST API with OpenAPI spec, GraphQL, Supabase, Firebase]
-Auth: [e.g., SuperTokens, Auth0, Firebase Auth, NextAuth, none]
-Users: [e.g., "graduates only (Phase 1)", "customers and admins"]
-Phase: [e.g., "MVP", "Phase 1", "production maintenance"]
-
-Notes:
-- [e.g., "RTL Arabic app", "uses Hey-API generated client", "WebSocket real-time chat", "NativeWind v4 styling"]
-
-Output directory: [e.g., docs/context/ or .agent-guides/]
+# Frontend context files
+npx skills add AliZ14-ECE/spec-driven-context-skills --skill frontend-context-files -a claude-code
 ```
 
-### Minimal Frontend Prompt
-```markdown
-Generate context files for my frontend project at [path/to/project].
-It's an [Expo/Next.js/React] app that [one sentence description].
+Install globally (available in all your projects):
+
+```bash
+npx skills add -g AliZ14-ECE/spec-driven-context-skills
 ```
 
----
+> **Requirements:** Node.js 22.20 or later
 
-## Backend Prompt Template
+## What These Skills Do
 
-Use when generating context for an API server, microservice, or backend pipeline.
+The AI agent scans your existing project, proposes a list of context files, and writes them after your approval. These files give any AI agent (Cursor, Copilot, Claude, Gemini) the full picture of your project so it writes code that matches your architecture, conventions, and scope.
 
-```markdown
+### How it works
+
+1. You provide a prompt describing your project
+2. The agent scans your codebase (manifest, folder structure, existing docs)
+3. The agent proposes a file list with sections — you approve, add, or remove
+4. The agent generates the files
+5. You review and commit them to version control
+
+## Usage
+
+### Backend projects
+
+```
 Generate context files for my backend project.
 
 Project: [one sentence — what the service does]
@@ -108,27 +59,71 @@ Language/Framework: [e.g., Go/Iris, Node/Express, Python/FastAPI, Rust/Axum]
 Database: [e.g., PostgreSQL, MongoDB, DynamoDB]
 API Style: [e.g., REST with OpenAPI spec, GraphQL, gRPC]
 Auth: [e.g., JWT, OAuth2, API keys, SuperTokens, none]
-Consumers: [e.g., "React frontend + mobile app", "internal microservices"]
-Phase: [e.g., "active development", "production v1"]
+Consumers: [who calls this service — e.g., "React frontend + mobile app", "internal microservices"]
+Phase: [e.g., "active development", "adding new features to production service"]
 
 Notes:
-- [e.g., "uses OpenAPI code generation", "Redis background worker", "multi-tenant with org isolation"]
+- [anything the agent should know]
 
 Output directory: [e.g., docs/context/ or .agent-guides/]
 ```
 
-### Minimal Backend Prompt
-```markdown
+**Minimal version:**
+
+```
 Generate context files for my backend project at [path/to/project].
-It's a [Go/Node/Python] service that [one sentence description].
+It's a [language/framework] service that [one sentence description].
 ```
 
----
+### Frontend projects
 
-## Developer Tips
+```
+Generate context files for my frontend project.
 
-1. **Be specific about scope:** Clarify what is in Phase 1 vs. future phases so the agent does not document features that should not be built yet.
-2. **Highlight complex subsystems:** If your auth flow, real-time messaging, or query setup has non-obvious nuances, mention it in `Notes:`. The agent will dedicate a separate candidate file for it.
-3. **Review the proposal:** The agent will output a proposed file list with sections before generating. Adjust or prune sections at this step.
-4. **Keep them living:** Update `progress-tracker.md` and your context files as your architecture evolves.
+Project: [one sentence — what the app does]
+Framework: [e.g., Next.js 15, Expo SDK 58, Vue 3, Angular 18]
+Language: [e.g., TypeScript, JavaScript]
+Backend: [e.g., REST API at api.example.com, GraphQL, Firebase, Supabase]
+Auth: [e.g., SuperTokens, Auth0, Firebase Auth, NextAuth, none]
+Users: [who uses the app — e.g., "customers and admins", "students only"]
+Phase: [e.g., "MVP", "Phase 1 — customer features only", "production maintenance"]
 
+Notes:
+- [anything the agent should know]
+
+Output directory: [e.g., docs/context/ or .agent-guides/]
+```
+
+**Minimal version:**
+
+```
+Generate context files for my frontend project at [path/to/project].
+It's a [framework] app that [one sentence description].
+```
+
+## Generated Files
+
+Both skills generate these core context files:
+
+| File                   | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `AGENTS.md`            | Root entry point — loaded on every agent session    |
+| `project-overview.md`  | What the project does, who uses it, what's in scope |
+| `architecture.md`      | Tech stack, data model, invariants                  |
+| `project-layout.md`    | Directory structure and naming conventions          |
+| `code-standards.md`    | Coding conventions and patterns                     |
+| `ai-workflow-rules.md` | How the AI agent should work on this project        |
+| `progress-tracker.md`  | Session continuity and decision log                 |
+
+Additional files are generated based on project complexity (e.g., `authentication.md`, `api-design.md`, `testing-strategy.md`).
+
+## Tips
+
+- **Be specific about scope.** Tell the agent what's in Phase 1 vs. Phase 2 so it doesn't document features you're not building yet.
+- **Mention the complex parts.** If your auth flow, real-time system, or API client has non-obvious details, say so — the agent will create dedicated files for them.
+- **Review the proposal.** The agent will show you the file list before writing. This is your chance to add or remove files.
+- **Iterate.** After generation, ask the agent to refine specific files. These are living docs — update them as the project evolves.
+
+## License
+
+MIT
